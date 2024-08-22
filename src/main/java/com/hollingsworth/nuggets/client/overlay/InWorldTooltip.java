@@ -8,6 +8,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -28,24 +29,25 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InWorldTooltip {
     public static MultiBufferSource.BufferSource renderType = MultiBufferSource.immediate(new ByteBufferBuilder(1536));
-
+    public static final LayeredDraw.Layer OVERLAY = InWorldTooltip::renderOverlay;
     public static int hoverTicks = 0;
     public static Object lastHovered = null;
 
-    public static Map<EntityType<?>, ITooltipConsumer> ENTITY_CALLBACKS = new HashMap<>();
+    public static Map<EntityType<?>, ITooltipConsumer> ENTITY_CALLBACKS = new ConcurrentHashMap<>();
 
-    public static void renderOverlay(GuiGraphics graphics, DeltaTracker tracker, int xOffset, int yOffset) {
+    public static void renderOverlay(GuiGraphics graphics, DeltaTracker tracker) {
         PoseStack poseStack = graphics.pose();
         Minecraft mc = Minecraft.getInstance();
         if (mc.options.hideGui || mc.gameMode.getPlayerMode() == GameType.SPECTATOR)
             return;
-
+        int xOffset = 20;
+        int yOffset = 0;
         HitResult objectMouseOver = mc.hitResult;
         List<Component> tooltip = new ArrayList<>();
         Object hovering = null;

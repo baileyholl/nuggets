@@ -1,6 +1,9 @@
 package com.hollingsworth.nuggets;
 
+import com.hollingsworth.nuggets.common.entity.DataSerializers;
 import com.hollingsworth.nuggets.common.event_queue.EventQueue;
+import com.hollingsworth.nuggets.internal.ClientEvents;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -21,10 +24,18 @@ public class Nuggets
         NeoForge.EVENT_BUS.addListener(EventQueue::serverTick);
         NeoForge.EVENT_BUS.addListener(EventQueue::clientTickEvent);
         NeoForge.EVENT_BUS.addListener(Nuggets::onServerStopped);
+        NeoForge.EVENT_BUS.addListener(ClientEvents::renderWorldLastEvent);
+        NeoForge.EVENT_BUS.addListener(ClientEvents::clientTickEnd);
+        modEventBus.addListener(ClientEvents::registerOverlays);
+        DataSerializers.DS.register(modEventBus);
     }
 
     public static void onServerStopped(final ServerStoppingEvent event) {
         EventQueue.getClientQueue().clear();
         EventQueue.getServerInstance().clear();
+    }
+
+    public static ResourceLocation prefix(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 }
