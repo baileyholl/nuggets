@@ -4,7 +4,10 @@
   "package": "com.hollingsworth.nuggets.mixin",
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_18",
-  "mixins": [],
+  "mixins": [
+    "MobAccessor",
+    "ScreenAccessor"
+  ],
   "client": [],
   "server": [],
   "injectors": {

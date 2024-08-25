@@ -1,15 +1,16 @@
 package com.hollingsworth.nuggets.internal;
 
-import com.hollingsworth.nuggets.Nuggets;
+import com.hollingsworth.nuggets.Constants;
 import com.hollingsworth.nuggets.client.NuggetClientData;
 import com.hollingsworth.nuggets.client.overlay.InWorldTooltip;
+import net.minecraft.client.gui.LayeredDraw;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 public class ClientEvents {
-
+    public static final LayeredDraw.Layer OVERLAY = InWorldTooltip::renderOverlay;
     public static void clientTickEnd(ClientTickEvent.Post event) {
         NuggetClientData.ticksInGame++;
     }
@@ -21,6 +22,6 @@ public class ClientEvents {
     }
 
     public static void registerOverlays(final RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.CROSSHAIR, Nuggets.prefix("in_world_tooltip"), InWorldTooltip.OVERLAY);
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, Constants.prefix("in_world_tooltip"), OVERLAY);
     }
 }
