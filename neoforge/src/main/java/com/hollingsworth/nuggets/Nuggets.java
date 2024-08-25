@@ -31,7 +31,7 @@ public class Nuggets
         modEventBus.addListener(ClientEvents::registerOverlays);
         DataSerializers.DS.register(modEventBus);
         if(!FMLEnvironment.production){
-            InWorldTooltip.ENTITY_CALLBACKS.put(EntityType.CREEPER, (entity, stack) -> {
+            InWorldTooltip.registerEntityCallback(EntityType.CREEPER, (entity, stack) -> {
                 stack.add(Component.literal("Nuggets test tooltip"));
             });
         }

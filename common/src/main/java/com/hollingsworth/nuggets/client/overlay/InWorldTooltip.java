@@ -37,7 +37,7 @@ public class InWorldTooltip {
 
     public static Map<EntityType<?>, List<ITooltipConsumer>> ENTITY_CALLBACKS = new ConcurrentHashMap<>();
 
-    public void registerEntityCallback(EntityType<?> type, ITooltipConsumer callback) {
+    public static void registerEntityCallback(EntityType<?> type, ITooltipConsumer callback) {
         ENTITY_CALLBACKS.computeIfAbsent(type, k -> new ArrayList<>()).add(callback);
     }
 
