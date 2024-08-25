@@ -1,6 +1,6 @@
-package src.main.java.com.hollingsworth.nuggets.client.rendering;
+package com.hollingsworth.nuggets.client.rendering;
 
-import src.main.java.com.hollingsworth.nuggets.common.Color;
+import com.hollingsworth.nuggets.common.Color;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;

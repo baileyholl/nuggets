@@ -1,10 +1,10 @@
-package src.main.java.com.hollingsworth.nuggets.common.datagen;
+package com.hollingsworth.nuggets.common.datagen;
 
-import src.main.java.com.hollingsworth.nuggets.common.datagen.patchouli.IPatchouliPage;
-import src.main.java.com.hollingsworth.nuggets.common.datagen.patchouli.PatchouliBuilder;
-import src.main.java.com.hollingsworth.nuggets.common.datagen.patchouli.PatchouliRecord;
-import src.main.java.com.hollingsworth.nuggets.common.datagen.patchouli.TextPage;
-import src.main.java.com.hollingsworth.nuggets.common.registry.RegistryHelper;
+import com.hollingsworth.nuggets.common.datagen.patchouli.IPatchouliPage;
+import com.hollingsworth.nuggets.common.datagen.patchouli.PatchouliBuilder;
+import com.hollingsworth.nuggets.common.datagen.patchouli.PatchouliRecord;
+import com.hollingsworth.nuggets.common.datagen.patchouli.TextPage;
+import com.hollingsworth.nuggets.common.registry.RegistryHelper;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;

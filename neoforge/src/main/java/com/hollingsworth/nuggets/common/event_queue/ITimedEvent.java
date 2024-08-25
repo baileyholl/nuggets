@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.common.event_queue;
+package com.hollingsworth.nuggets.common.event_queue;
 
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;

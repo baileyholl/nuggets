@@ -1,6 +1,6 @@
-package src.main.java.com.hollingsworth.nuggets.client.overlay;
+package com.hollingsworth.nuggets.client.overlay;
 
-import src.main.java.com.hollingsworth.nuggets.common.Color;
+import com.hollingsworth.nuggets.common.Color;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;

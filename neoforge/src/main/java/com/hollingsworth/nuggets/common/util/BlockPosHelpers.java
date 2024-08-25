@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.common.util;
+package com.hollingsworth.nuggets.common.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;

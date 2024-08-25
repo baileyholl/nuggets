@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.common.registry;
+package com.hollingsworth.nuggets.common.registry;
 
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredHolder;

@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.common.codec;
+package com.hollingsworth.nuggets.common.codec;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

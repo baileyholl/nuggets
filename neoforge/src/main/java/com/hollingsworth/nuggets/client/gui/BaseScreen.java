@@ -1,6 +1,6 @@
-package src.main.java.com.hollingsworth.nuggets.client.gui;
+package com.hollingsworth.nuggets.client.gui;
 
-import src.main.java.com.hollingsworth.nuggets.client.overlay.ITooltipProvider;
+import com.hollingsworth.nuggets.client.overlay.ITooltipProvider;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;

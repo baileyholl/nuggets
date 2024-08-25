@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.client.gui;
+package com.hollingsworth.nuggets.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;

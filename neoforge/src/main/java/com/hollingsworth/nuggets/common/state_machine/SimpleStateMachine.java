@@ -1,6 +1,7 @@
-package src.main.java.com.hollingsworth.nuggets.common.state_machine;
+package com.hollingsworth.nuggets.common.state_machine;
 
-import src.main.java.com.hollingsworth.nuggets.Nuggets;
+
+import com.hollingsworth.nuggets.Nuggets;
 
 import javax.annotation.Nonnull;
 

@@ -1,7 +1,7 @@
-package src.main.java.com.hollingsworth.nuggets.client.gui;
+package com.hollingsworth.nuggets.client.gui;
 
-import src.main.java.com.hollingsworth.nuggets.client.NuggetClientData;
-import src.main.java.com.hollingsworth.nuggets.client.rendering.RenderHelpers;
+import com.hollingsworth.nuggets.client.NuggetClientData;
+import com.hollingsworth.nuggets.client.rendering.RenderHelpers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

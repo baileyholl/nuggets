@@ -1,8 +1,8 @@
-package src.main.java.com.hollingsworth.nuggets;
+package com.hollingsworth.nuggets;
 
-import src.main.java.com.hollingsworth.nuggets.common.entity.DataSerializers;
-import src.main.java.com.hollingsworth.nuggets.common.event_queue.EventQueue;
-import src.main.java.com.hollingsworth.nuggets.internal.ClientEvents;
+import com.hollingsworth.nuggets.common.entity.DataSerializers;
+import com.hollingsworth.nuggets.common.event_queue.EventQueue;
+import com.hollingsworth.nuggets.internal.ClientEvents;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;

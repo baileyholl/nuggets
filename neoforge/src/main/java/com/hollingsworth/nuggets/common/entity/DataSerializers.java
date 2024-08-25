@@ -1,7 +1,7 @@
-package src.main.java.com.hollingsworth.nuggets.common.entity;
+package com.hollingsworth.nuggets.common.entity;
 
-import src.main.java.com.hollingsworth.nuggets.Nuggets;
-import src.main.java.com.hollingsworth.nuggets.common.codec.NuggetCodecs;
+import com.hollingsworth.nuggets.Nuggets;
+import com.hollingsworth.nuggets.common.codec.NuggetCodecs;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;

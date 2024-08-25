@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.common.debug;
+package com.hollingsworth.nuggets.common.debug;
 
 import java.io.PrintWriter;
 

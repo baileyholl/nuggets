@@ -1,8 +1,8 @@
-package src.main.java.com.hollingsworth.nuggets.internal;
+package com.hollingsworth.nuggets.internal;
 
-import src.main.java.com.hollingsworth.nuggets.Nuggets;
-import src.main.java.com.hollingsworth.nuggets.client.NuggetClientData;
-import src.main.java.com.hollingsworth.nuggets.client.overlay.InWorldTooltip;
+import com.hollingsworth.nuggets.Nuggets;
+import com.hollingsworth.nuggets.client.NuggetClientData;
+import com.hollingsworth.nuggets.client.overlay.InWorldTooltip;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;

@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.client;
+package com.hollingsworth.nuggets.client;
 
 public class NuggetClientData {
 

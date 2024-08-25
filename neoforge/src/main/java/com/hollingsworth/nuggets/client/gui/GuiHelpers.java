@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.client.gui;
+package com.hollingsworth.nuggets.client.gui;
 
 import net.minecraft.client.gui.components.AbstractWidget;
 

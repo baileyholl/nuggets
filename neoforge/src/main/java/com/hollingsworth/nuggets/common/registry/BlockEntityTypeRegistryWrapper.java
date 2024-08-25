@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.common.registry;
+package com.hollingsworth.nuggets.common.registry;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;

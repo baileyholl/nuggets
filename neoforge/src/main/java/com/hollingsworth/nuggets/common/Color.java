@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.common;
+package com.hollingsworth.nuggets.common;
 
 
 import com.google.common.hash.Hashing;

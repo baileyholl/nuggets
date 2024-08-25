@@ -1,6 +1,7 @@
-package src.main.java.com.hollingsworth.nuggets.common.datagen.patchouli;
+package com.hollingsworth.nuggets.common.datagen.patchouli;
 
-import src.main.java.com.hollingsworth.nuggets.common.registry.RegistryHelper;
+
+import com.hollingsworth.nuggets.common.registry.RegistryHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 

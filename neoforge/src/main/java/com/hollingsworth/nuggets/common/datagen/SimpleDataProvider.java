@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.common.datagen;
+package com.hollingsworth.nuggets.common.datagen;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;

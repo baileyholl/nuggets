@@ -1,6 +1,6 @@
-package src.main.java.com.hollingsworth.nuggets.client.gui;
+package com.hollingsworth.nuggets.client.gui;
 
-import src.main.java.com.hollingsworth.nuggets.client.overlay.ITooltipProvider;
+import com.hollingsworth.nuggets.client.overlay.ITooltipProvider;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;

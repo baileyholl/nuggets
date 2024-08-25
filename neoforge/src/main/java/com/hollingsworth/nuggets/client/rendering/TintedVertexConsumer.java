@@ -1,4 +1,4 @@
-package src.main.java.com.hollingsworth.nuggets.client.rendering;
+package com.hollingsworth.nuggets.client.rendering;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
