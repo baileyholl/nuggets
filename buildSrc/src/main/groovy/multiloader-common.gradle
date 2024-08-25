@@ -2,7 +2,9 @@ plugins {
     id 'java-library'
     id 'maven-publish'
 }
-
+if (System.getenv('BUILD_NUMBER') != null) {
+    version += "." + System.getenv('BUILD_NUMBER')
+}
 base {
     archivesName = "${mod_id}-${project.name}-${minecraft_version}"
 }
