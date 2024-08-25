@@ -5,6 +5,11 @@ plugins {
 
 neoForge {
     version = neoforge_version
+
+    if (System.getenv('BUILD_NUMBER') != null) {
+        version += "." + System.getenv('BUILD_NUMBER')
+    }
+
     // Automatically enable neoforge AccessTransformers if the file exists
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
