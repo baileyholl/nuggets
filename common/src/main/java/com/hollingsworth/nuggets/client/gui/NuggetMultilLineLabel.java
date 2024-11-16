@@ -11,23 +11,58 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface NuggetMultilLineLabel {
+public interface NuggetMultilLineLabel extends MultiLineLabel {
+    NuggetMultilLineLabel EMPTY = new NuggetMultilLineLabel() {
+        @Override
+        public void renderCentered(GuiGraphics p_283287_, int p_94383_, int p_94384_) {
+        }
 
-    static MultiLineLabel create(Font font, Component... components) {
+        @Override
+        public void renderCentered(GuiGraphics p_283208_, int p_210825_, int p_210826_, int p_210827_, int p_210828_) {
+        }
+
+        @Override
+        public void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_, int p_352944_) {
+            
+        }
+
+        @Override
+        public void renderLeftAligned(GuiGraphics p_283077_, int p_94379_, int p_94380_, int p_282157_, int p_282742_) {
+        }
+
+        @Override
+        public int renderLeftAlignedNoShadow(GuiGraphics p_283645_, int p_94389_, int p_94390_, int p_94391_, int p_94392_) {
+            return p_94390_;
+        }
+
+        @Override
+        public int getLineCount() {
+            return 0;
+        }
+
+        @Override
+        public int getWidth() {
+            return 0;
+        }
+    };
+
+    void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_, int p_352944_);
+
+    static NuggetMultilLineLabel create(Font font, Component... components) {
         return create(font, Integer.MAX_VALUE, Integer.MAX_VALUE, components);
     }
 
-    static MultiLineLabel create(Font font, int maxWidth, Component... components) {
+    static NuggetMultilLineLabel create(Font font, int maxWidth, Component... components) {
         return create(font, maxWidth, Integer.MAX_VALUE, components);
     }
 
-    static MultiLineLabel create(Font font, Component component, int maxWidth) {
+    static NuggetMultilLineLabel create(Font font, Component component, int maxWidth) {
         return create(font, maxWidth, Integer.MAX_VALUE, component);
     }
 
-    static MultiLineLabel create(final Font font, final int maxWidth, final int maxRows, final Component... components) {
+    static NuggetMultilLineLabel create(final Font font, final int maxWidth, final int maxRows, final Component... components) {
         MultiLineLabel vanillaLabel = MultiLineLabel.create(font, maxWidth, maxRows, components);
-        return components.length == 0 ? MultiLineLabel.EMPTY : new MultiLineLabel() {
+        return components.length == 0 ? EMPTY : new NuggetMultilLineLabel() {
             @Nullable
             private List<TextAndWidth> cachedTextAndWidth;
             @Nullable
