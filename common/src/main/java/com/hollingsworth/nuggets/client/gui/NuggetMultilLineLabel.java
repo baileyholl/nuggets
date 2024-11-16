@@ -23,7 +23,12 @@ public interface NuggetMultilLineLabel extends MultiLineLabel {
 
         @Override
         public void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_, int p_352944_) {
-            
+
+        }
+
+        @Override
+        public void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_) {
+
         }
 
         @Override
@@ -47,6 +52,8 @@ public interface NuggetMultilLineLabel extends MultiLineLabel {
     };
 
     void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_, int p_352944_);
+
+    void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_);
 
     static NuggetMultilLineLabel create(Font font, Component... components) {
         return create(font, Integer.MAX_VALUE, Integer.MAX_VALUE, components);
