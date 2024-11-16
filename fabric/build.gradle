@@ -15,10 +15,6 @@ dependencies {
 
 loom {
 
-    if (System.getenv('BUILD_NUMBER') != null) {
-        version += "." + System.getenv('BUILD_NUMBER')
-    }
-
     def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
     if (aw.exists()) {
         accessWidenerPath.set(aw)
