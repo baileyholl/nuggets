@@ -35,7 +35,7 @@ public class ItemButton extends BaseButton{
             ItemStack stack = ingredient.getItems()[(NuggetClientData.ticksInGame / 20) % ingredient.getItems().length];
             if (GuiHelpers.isMouseInRelativeRange(pMouseX, pMouseY, getX(), getY(), width, height)) {
                 Font font = Minecraft.getInstance().font;
-                List<ClientTooltipComponent> components = new ArrayList<>(GuiHelpers.gatherTooltipComponents(ItemStack.EMPTY, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), pMouseX, width, height, font));
+                List<ClientTooltipComponent> components = new ArrayList<>(GuiHelpers.gatherTooltipComponents(Screen.getTooltipFromItem(Minecraft.getInstance(), stack), pMouseX, width, height, font));
                 RenderHelpers.renderTooltipInternal(graphics, components, pMouseX, pMouseY, screen);
             }
             RenderHelpers.drawItemAsIcon(stack, graphics, getX() + 3, getY() + 2, 16, false);

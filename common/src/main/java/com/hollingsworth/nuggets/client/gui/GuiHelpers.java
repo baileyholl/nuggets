@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +28,8 @@ public class GuiHelpers {
         return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
     }
 
-    public static List<ClientTooltipComponent> gatherTooltipComponents(ItemStack stack, List<? extends FormattedText> textElements, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
-        return gatherTooltipComponents(stack, textElements, Optional.empty(), mouseX, screenWidth, screenHeight, fallbackFont);
+    public static List<ClientTooltipComponent> gatherTooltipComponents(List<? extends FormattedText> textElements, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
+        return gatherTooltipComponents(textElements, Optional.empty(), mouseX, screenWidth, screenHeight, fallbackFont);
     }
 
     //  https://github.com/Team-Resourceful/ResourcefulBees/blob/be1aa52925adfb42bf0fe90feeac011f7fc0d0db/common/src/main/java/com/teamresourceful/resourcefulbees/client/util/TextUtils.java#L43
@@ -38,11 +37,15 @@ public class GuiHelpers {
         graphics.drawString(font, component.getString(), x - halfWidthOfText(font, component.getVisualOrderText()), y, color, false);
     }
 
+    public static void drawCenteredStringNoShadow(Font font, GuiGraphics graphics, FormattedCharSequence component, int x, int y, int color) {
+        graphics.drawString(font, component, x - halfWidthOfText(font, component), y, color, false);
+    }
+
     public static int halfWidthOfText(Font font, FormattedCharSequence component) {
         return font.width(component) / 2;
     }
 
-    public static List<ClientTooltipComponent> gatherTooltipComponents(ItemStack stack, List<? extends FormattedText> textElements, Optional<TooltipComponent> itemComponent, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
+    public static List<ClientTooltipComponent> gatherTooltipComponents(List<? extends FormattedText> textElements, Optional<TooltipComponent> itemComponent, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
         Font font = fallbackFont;
         List<Either<FormattedText, TooltipComponent>> elements = (List) textElements.stream().map(Either::left).collect(Collectors.toCollection(ArrayList::new));
         itemComponent.ifPresent((c) -> {

@@ -133,7 +133,7 @@ public class InWorldTooltip {
             return;
 
         PoseStack pStack = graphics.pose();
-        List<ClientTooltipComponent> list = GuiHelpers.gatherTooltipComponents(stack, textLines, stack.getTooltipImage(), mouseX, screenWidth, screenHeight, font);
+        List<ClientTooltipComponent> list = GuiHelpers.gatherTooltipComponents(textLines, stack.getTooltipImage(), mouseX, screenWidth, screenHeight, font);
 
         RenderSystem.disableDepthTest();
         int tooltipTextWidth = 0;
