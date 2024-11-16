@@ -28,6 +28,7 @@ public class Nuggets
         NeoForge.EVENT_BUS.addListener(Nuggets::onServerStopped);
         NeoForge.EVENT_BUS.addListener(ClientEvents::renderWorldLastEvent);
         NeoForge.EVENT_BUS.addListener(ClientEvents::clientTickEnd);
+        NeoForge.EVENT_BUS.addListener(ClientEvents::updateInputEvent);
         modEventBus.addListener(ClientEvents::registerOverlays);
         DataSerializers.DS.register(modEventBus);
         if(!FMLEnvironment.production){

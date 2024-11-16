@@ -56,7 +56,7 @@ public class BaseScreen extends Screen {
     }
 
     public void collectTooltips(GuiGraphics stack, int mouseX, int mouseY, List<Component> tooltip){
-        for(Renderable renderable : getRenderables()){
+        for(Renderable renderable : renderablesList()){
             if(renderable instanceof AbstractWidget widget && renderable instanceof ITooltipProvider tooltipProvider){
                 if(GuiHelpers.isMouseInRelativeRange(mouseX, mouseY, widget)){
                     tooltipProvider.getTooltip(tooltip);
@@ -67,7 +67,7 @@ public class BaseScreen extends Screen {
     }
 
     public @Nullable Renderable getHoveredRenderable(int mouseX, int mouseY){
-        for(Renderable renderable : getRenderables()){
+        for(Renderable renderable : renderablesList()){
             if(renderable instanceof AbstractWidget widget){
                 if(GuiHelpers.isMouseInRelativeRange(mouseX, mouseY, widget)){
                     return renderable;
@@ -90,7 +90,7 @@ public class BaseScreen extends Screen {
         drawBackgroundElements(graphics, mouseX, mouseY, partialTicks);
         drawForegroundElements(mouseX, mouseY, partialTicks);
         poseStack.popPose();
-        for (Renderable renderable : this.getRenderables()) {
+        for (Renderable renderable : this.renderablesList()) {
             renderable.render(graphics, mouseX, mouseY, partialTicks);
         }
         drawTooltip(graphics, mouseX, mouseY);
@@ -127,7 +127,7 @@ public class BaseScreen extends Screen {
 
     }
 
-    public List<Renderable> getRenderables() {
+    public List<Renderable> renderablesList() {
         return ((ScreenAccessor)this).getRenderables();
     }
 }

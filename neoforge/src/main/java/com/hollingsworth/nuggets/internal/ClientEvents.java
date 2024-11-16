@@ -2,9 +2,11 @@ package com.hollingsworth.nuggets.internal;
 
 import com.hollingsworth.nuggets.Constants;
 import com.hollingsworth.nuggets.client.NuggetClientData;
+import com.hollingsworth.nuggets.client.gui.radial.GuiRadialMenu;
 import com.hollingsworth.nuggets.client.overlay.InWorldTooltip;
 import net.minecraft.client.gui.LayeredDraw;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
@@ -23,5 +25,9 @@ public class ClientEvents {
 
     public static void registerOverlays(final RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, Constants.prefix("in_world_tooltip"), OVERLAY);
+    }
+
+    public static void updateInputEvent(final MovementInputUpdateEvent event){
+        GuiRadialMenu.updateInputEvent(event.getInput());
     }
 }
