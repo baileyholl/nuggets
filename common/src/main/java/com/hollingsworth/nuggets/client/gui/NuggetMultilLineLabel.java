@@ -27,7 +27,7 @@ public interface NuggetMultilLineLabel extends MultiLineLabel {
         }
 
         @Override
-        public void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_) {
+        public void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_, int p_352944_, int p_352919_) {
 
         }
 
@@ -53,7 +53,7 @@ public interface NuggetMultilLineLabel extends MultiLineLabel {
 
     void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_, int p_352944_);
 
-    void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_);
+    void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_, int p_352944_, int p_352919_);
 
     static NuggetMultilLineLabel create(Font font, Component... components) {
         return create(font, Integer.MAX_VALUE, Integer.MAX_VALUE, components);
@@ -94,7 +94,6 @@ public interface NuggetMultilLineLabel extends MultiLineLabel {
 
                 for (MultiLineLabel.TextAndWidth multilinelabel$textandwidth : this.getSplitMessage()) {
                     GuiHelpers.drawCenteredStringNoShadow(font, p_283492_, multilinelabel$textandwidth.text(), p_283184_, i, p_352919_);
-                    p_283492_.drawCenteredString(font, multilinelabel$textandwidth.text(), p_283184_, i, p_352919_);
                     i += p_352944_;
                 }
             }
