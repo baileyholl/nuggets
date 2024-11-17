@@ -7,6 +7,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -129,5 +131,25 @@ public class BaseScreen extends Screen {
 
     public List<Renderable> renderablesList() {
         return ((ScreenAccessor)this).getRenderables();
+    }
+
+    @Override
+    protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T pWidget) {
+        if(pWidget instanceof NestedWidgets nestedWidgets){
+            for(AbstractWidget widget : nestedWidgets.getExtras()){
+                super.addRenderableWidget(widget);
+            }
+        }
+        return super.addRenderableWidget(pWidget);
+    }
+
+    @Override
+    protected void removeWidget(GuiEventListener pListener) {
+        super.removeWidget(pListener);
+        if(pListener instanceof NestedWidgets nestedWidgets){
+            for(AbstractWidget renderable : nestedWidgets.getExtras()){
+                removeWidget(renderable);
+            }
+        }
     }
 }
