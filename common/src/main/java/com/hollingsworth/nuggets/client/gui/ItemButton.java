@@ -50,7 +50,7 @@ public class ItemButton extends BaseButton{
                 List<ClientTooltipComponent> components = new ArrayList<>(GuiHelpers.gatherTooltipComponents(Screen.getTooltipFromItem(Minecraft.getInstance(), stack), pMouseX, screen.width, screen.height, font));
                 RenderHelpers.renderTooltipInternal(graphics, components, pMouseX, pMouseY, screen);
             }
-            RenderHelpers.drawItemAsIcon(stack, graphics, getX() + 3, getY() + 2, scale, false);
+            RenderHelpers.drawItemAsIcon(stack, graphics, getX(), getY(), scale, false);
         }
     }
 
