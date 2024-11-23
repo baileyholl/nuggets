@@ -18,6 +18,8 @@ import java.util.List;
 public class ItemButton extends BaseButton{
     public Ingredient ingredient;
     public Screen screen;
+    public int scale = 16;
+    List<Component> tooltips = new ArrayList<>();
 
     public ItemButton(int x, int y, int w, int h, @NotNull Component text, OnPress onPress, Ingredient ingredient, Screen screen) {
         super(x, y, w, h, text, onPress);
@@ -29,6 +31,16 @@ public class ItemButton extends BaseButton{
         this(x, y, w, h, text, onPress, Ingredient.of(stack), screen);
     }
 
+    public ItemButton withScale(int scale){
+        this.scale = scale;
+        return this;
+    }
+
+    public ItemButton withTooltips(List<Component> tooltips){
+        this.tooltips = tooltips;
+        return this;
+    }
+
     @Override
     protected void renderWidget(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (ingredient != null && ingredient.getItems().length != 0) {
@@ -38,8 +50,14 @@ public class ItemButton extends BaseButton{
                 List<ClientTooltipComponent> components = new ArrayList<>(GuiHelpers.gatherTooltipComponents(Screen.getTooltipFromItem(Minecraft.getInstance(), stack), pMouseX, width, height, font));
                 RenderHelpers.renderTooltipInternal(graphics, components, pMouseX, pMouseY, screen);
             }
-            RenderHelpers.drawItemAsIcon(stack, graphics, getX() + 3, getY() + 2, 16, false);
+            RenderHelpers.drawItemAsIcon(stack, graphics, getX() + 3, getY() + 2, scale, false);
         }
         super.renderWidget(graphics, pMouseX, pMouseY, pPartialTick);
+    }
+
+    @Override
+    public void getTooltip(List<Component> tooltip) {
+        super.getTooltip(tooltip);
+        tooltip.addAll(tooltips);
     }
 }
