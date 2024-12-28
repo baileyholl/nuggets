@@ -53,12 +53,12 @@ public class InWorldTooltip {
         Object hovering = null;
         if(objectMouseOver instanceof BlockHitResult hitResult){
             hovering = hitResult.getBlockPos();
-            if(mc.level.getBlockEntity(hitResult.getBlockPos()) instanceof ITooltipProvider iTooltipProvider){
-                iTooltipProvider.getTooltip(tooltip);
+            if(mc.level.getBlockEntity(hitResult.getBlockPos()) instanceof IWorldTooltipProvider iWorldTooltipProvider){
+                iWorldTooltipProvider.getTooltip(tooltip);
             }
         }else if(objectMouseOver instanceof EntityHitResult result){
-            if (result.getEntity() instanceof ITooltipProvider iTooltipProvider) {
-                iTooltipProvider.getTooltip(tooltip);
+            if (result.getEntity() instanceof IWorldTooltipProvider iWorldTooltipProvider) {
+                iWorldTooltipProvider.getTooltip(tooltip);
             }
             var consumers = ENTITY_CALLBACKS.get(result.getEntity().getType());
             if (consumers != null) {

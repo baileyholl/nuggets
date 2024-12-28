@@ -1,15 +1,16 @@
 package com.hollingsworth.nuggets.client.gui;
 
-import com.hollingsworth.nuggets.client.overlay.ITooltipProvider;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class BaseButton extends Button implements ITooltipProvider {
+public class BaseButton extends Button implements ITooltipRenderer {
     public boolean playSound = true;
+    public List<Component> tooltips = new ArrayList<>();
 
     public BaseButton(int x, int y, int w, int h, @NotNull Component text, OnPress onPress) {
         super(x, y, w, h, text, onPress, Button.DEFAULT_NARRATION);
@@ -24,9 +25,19 @@ public class BaseButton extends Button implements ITooltipProvider {
         return this;
     }
 
-    @Override
-    public void getTooltip(List<Component> tooltip) {
+    public BaseButton withTooltips(List<Component> tooltips){
+        this.tooltips = tooltips;
+        return this;
+    }
 
+    public BaseButton withTooltip(Component tooltip){
+        this.tooltips.add(tooltip);
+        return this;
+    }
+
+    @Override
+    public void gatherTooltips(List<Component> tooltip) {
+        tooltip.addAll(tooltips);
     }
 
     @Override

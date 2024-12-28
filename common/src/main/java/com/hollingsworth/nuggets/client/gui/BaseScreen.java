@@ -1,6 +1,5 @@
 package com.hollingsworth.nuggets.client.gui;
 
-import com.hollingsworth.nuggets.client.overlay.ITooltipProvider;
 import com.hollingsworth.nuggets.mixin.ScreenAccessor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -13,7 +12,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +24,8 @@ public class BaseScreen extends Screen {
     public int bookRight;
     public int bookBottom;
 
-    public int fullWidth = 290;
-    public int fullHeight = 194;
+    public int fullWidth;
+    public int fullHeight;
 
     public ResourceLocation background;
 
@@ -59,24 +57,34 @@ public class BaseScreen extends Screen {
 
     public void collectTooltips(GuiGraphics stack, int mouseX, int mouseY, List<Component> tooltip){
         for(Renderable renderable : renderablesList()){
-            if(renderable instanceof AbstractWidget widget && renderable instanceof ITooltipProvider tooltipProvider){
-                if(GuiHelpers.isMouseInRelativeRange(mouseX, mouseY, widget)){
-                    tooltipProvider.getTooltip(tooltip);
-                    break;
+            if(renderable instanceof AbstractWidget widget && renderable instanceof ITooltipRenderer tooltipProvider){
+                if(GuiHelpers.isMouseInRelativeRange(mouseX, mouseY, widget) && widget.visible){
+                    tooltipProvider.gatherTooltips(stack, mouseX, mouseY, tooltip);
                 }
             }
         }
     }
 
-    public @Nullable Renderable getHoveredRenderable(int mouseX, int mouseY){
-        for(Renderable renderable : renderablesList()){
-            if(renderable instanceof AbstractWidget widget){
-                if(GuiHelpers.isMouseInRelativeRange(mouseX, mouseY, widget)){
-                    return renderable;
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        for (GuiEventListener guieventlistener : this.children()) {
+            if (guieventlistener.mouseClicked(pMouseX, pMouseY, pButton)) {
+                if(guieventlistener instanceof NestedWidgets nestedWidgets){
+                    for(AbstractWidget extra : nestedWidgets.getExtras()){
+                        extra.mouseClicked(pMouseX, pMouseY, pButton);
+                    }
+
                 }
+                this.setFocused(guieventlistener);
+                if (pButton == 0) {
+                    this.setDragging(true);
+                }
+
+                return true;
             }
         }
-        return null;
+
+        return false;
     }
 
     public void drawForegroundElements(int mouseX, int mouseY, float partialTicks) {
@@ -135,12 +143,13 @@ public class BaseScreen extends Screen {
 
     @Override
     protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T pWidget) {
+        T t = super.addRenderableWidget(pWidget);
         if(pWidget instanceof NestedWidgets nestedWidgets){
             for(AbstractWidget widget : nestedWidgets.getExtras()){
                 super.addRenderableWidget(widget);
             }
         }
-        return super.addRenderableWidget(pWidget);
+        return t;
     }
 
     @Override

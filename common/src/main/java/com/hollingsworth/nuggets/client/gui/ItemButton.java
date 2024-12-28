@@ -19,7 +19,6 @@ public class ItemButton extends BaseButton{
     public Ingredient ingredient;
     public Screen screen;
     public int scale = 16;
-    List<Component> tooltips = new ArrayList<>();
 
     public ItemButton(int x, int y, int w, int h, @NotNull Component text, OnPress onPress, Ingredient ingredient, Screen screen) {
         super(x, y, w, h, text, onPress);
@@ -36,27 +35,22 @@ public class ItemButton extends BaseButton{
         return this;
     }
 
-    public ItemButton withTooltips(List<Component> tooltips){
-        this.tooltips = tooltips;
-        return this;
-    }
-
     @Override
     protected void renderWidget(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (ingredient != null && ingredient.getItems().length != 0) {
             ItemStack stack = ingredient.getItems()[(NuggetClientData.ticksInGame / 20) % ingredient.getItems().length];
-            if (GuiHelpers.isMouseInRelativeRange(pMouseX, pMouseY, getX(), getY(), width, height)) {
-                Font font = Minecraft.getInstance().font;
-                List<ClientTooltipComponent> components = new ArrayList<>(GuiHelpers.gatherTooltipComponents(Screen.getTooltipFromItem(Minecraft.getInstance(), stack), pMouseX, screen.width, screen.height, font));
-                RenderHelpers.renderTooltipInternal(graphics, components, pMouseX, pMouseY, screen);
-            }
             RenderHelpers.drawItemAsIcon(stack, graphics, getX(), getY(), scale, false);
         }
     }
 
     @Override
-    public void getTooltip(List<Component> tooltip) {
-        super.getTooltip(tooltip);
-        tooltip.addAll(tooltips);
+    public void gatherTooltips(GuiGraphics graphics, int mouseX, int mouseY, List<Component> tooltip) {
+        super.gatherTooltips(graphics, mouseX, mouseY, tooltip);
+        if (ingredient != null && ingredient.getItems().length != 0) {
+            ItemStack stack = ingredient.getItems()[(NuggetClientData.ticksInGame / 20) % ingredient.getItems().length];
+            Font font = Minecraft.getInstance().font;
+            List<ClientTooltipComponent> components = new ArrayList<>(GuiHelpers.gatherTooltipComponents(Screen.getTooltipFromItem(Minecraft.getInstance(), stack), mouseX, screen.width, screen.height, font));
+            RenderHelpers.renderTooltipInternal(graphics, components, mouseX, mouseY, screen);
+        }
     }
 }
