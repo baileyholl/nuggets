@@ -1,6 +1,5 @@
 package com.hollingsworth.nuggets.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,57 +22,56 @@ public class NoShadowTextField extends CopyEditBox {
         super(p_i232259_1_, p_i232259_2_, p_i232259_3_, p_i232259_4_, p_i232259_5_, p_i232259_6_, p_i232259_7_);
     }
 
+    public int getXTextOffset(){
+        return this.bordered ? this.getX() + 4 : this.getX();
+    }
+
+    public int getYTextOffset(){
+        return this.bordered ? this.getY() + (this.height - 8) / 2 : this.getY();
+    }
+
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        PoseStack matrixStack = graphics.pose();
-        if(!this.visible){
-            return;
-        }
+        if (this.visible) {
+            int i2 = this.isEditable ? this.textColor : this.textColorUneditable;
+            int adjustedCursorPos = this.cursorPos - this.displayPos;
+            String displayValue = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
+            boolean flag = adjustedCursorPos >= 0 && adjustedCursorPos <= displayValue.length();
+            boolean flag1 = this.isFocused() && (Util.getMillis() - this.focusedTime) / 300L % 2L == 0L && flag;
+            int xOffset = this.getXTextOffset();
+            int yOffset = this.getYTextOffset();
+            int xOffsetCopy = xOffset;
 
-        int i2 = this.isEditable ? this.textColor : this.textColorUneditable;
-        int j = this.cursorPos - this.displayPos;
-        int k = this.highlightPos - this.displayPos;
-        String s = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
-        boolean flag = j >= 0 && j <= s.length();
-        boolean flag1 = this.isFocused() && (Util.getMillis() - this.focusedTime) / 300L % 2L == 0L && flag;
-        int l = this.bordered ? this.getX() + 4 : this.getX();
-        int i1 = this.bordered ? this.getY() + (this.height - 8) / 2 : this.getY();
-        int j1 = l;
-        if (k > s.length()) {
-            k = s.length();
-        }
+            if (!displayValue.isEmpty()) {
+                String s1 = flag ? displayValue.substring(0, adjustedCursorPos) : displayValue;
+                xOffsetCopy = graphics.drawString(this.font, this.formatter.apply(s1, this.displayPos), xOffset, yOffset, -8355712, false);
+            }
 
-        if (!s.isEmpty()) {
-            String s1 = flag ? s.substring(0, j) : s;
-            j1 = graphics.drawString(font, this.formatter.apply(s1, this.displayPos),  l,  i1, -8355712, false);
+            boolean flag2 = this.cursorPos < this.value.length() || this.value.length() >= 32;
+            int k1 = xOffsetCopy;
+            if (!flag) {
+                k1 = adjustedCursorPos > 0 ? xOffset + this.width : xOffset;
+            } else if (flag2) {
+                k1 = xOffsetCopy - 1;
+                --xOffsetCopy;
+            }
 
-        }
+            if (!displayValue.isEmpty() && flag && adjustedCursorPos < displayValue.length()) {
+                graphics.drawString(this.font, this.formatter.apply(displayValue.substring(adjustedCursorPos), this.cursorPos), xOffsetCopy, yOffset, i2);
+            }
 
-        boolean flag2 = this.cursorPos < this.value.length() || this.value.length() >= 32;
-        int k1 = j1;
-        if (!flag) {
-            k1 = j > 0 ? l + this.width : l;
-        } else if (flag2) {
-            k1 = j1 - 1;
-            --j1;
-        }
+            if (this.value.isEmpty() && !flag2 && this.suggestion != null) {
+                graphics.drawString(this.font, this.suggestion, k1, yOffset, -8355712, false);
+            }
 
-        if (!s.isEmpty() && flag && j < s.length()) {
-            graphics.drawString(font, this.formatter.apply(s.substring(j), this.cursorPos), j1, i1, i2);
-        }
-
-        if (!flag2 && this.suggestion != null) {
-            graphics.drawString(this.font, this.suggestion, k1 - 1, i1, -8355712, false);
-        }
-
-        if (flag1) {
-            if (flag2) {
-                graphics.fill(k1, i1 - 1, k1 + 1, i1 + 1 + 9, -3092272);
-            } else {
-                graphics.drawString(this.font, "_", k1, i1, i2, false);
+            if (flag1) {
+                if (flag2) {
+                    graphics.fill(k1, yOffset - 1, k1 + 1, yOffset + 1 + 9, -3092272);
+                } else {
+                    graphics.drawString(this.font, "_", k1, yOffset, i2, false);
+                }
             }
         }
-
     }
 
     @Override

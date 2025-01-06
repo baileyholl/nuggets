@@ -115,7 +115,6 @@ public class CopyEditBox extends AbstractWidget implements Renderable {
             this.setHighlightPos(this.cursorPos);
             this.onValueChange(text);
         }
-
     }
 
     public String getValue() {
@@ -149,12 +148,7 @@ public class CopyEditBox extends AbstractWidget implements Renderable {
             }
 
             String s1 = (new StringBuilder(this.value)).replace(i, j, s).toString();
-            if (this.filter.test(s1)) {
-                this.value = s1;
-                this.setCursorPosition(i + l);
-                this.setHighlightPos(this.cursorPos);
-                this.onValueChange(this.value);
-            }
+            this.setValue(s1);
         }
 
     }
