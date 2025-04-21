@@ -49,11 +49,18 @@ public interface NuggetMultilLineLabel extends MultiLineLabel {
         public int getWidth() {
             return 0;
         }
+
+        @Override
+        public String getString() {
+            return "";
+        }
     };
 
     void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_, int p_352944_);
 
     void renderCenteredNoShadow(GuiGraphics p_283492_, int p_283184_, int p_282078_, int p_352944_, int p_352919_);
+
+    String getString();
 
     static NuggetMultilLineLabel create(Font font, Component... components) {
         return create(font, Integer.MAX_VALUE, Integer.MAX_VALUE, components);
@@ -74,6 +81,8 @@ public interface NuggetMultilLineLabel extends MultiLineLabel {
             private List<TextAndWidth> cachedTextAndWidth;
             @Nullable
             private Language splitWithLanguage;
+
+            private String cachedString;
 
             @Override
             public void renderCentered(GuiGraphics p_281603_, int p_281267_, int p_281819_) {
@@ -108,7 +117,7 @@ public interface NuggetMultilLineLabel extends MultiLineLabel {
                 return vanillaLabel.renderLeftAlignedNoShadow(p_281782_, p_282841_, p_283554_, p_282768_, p_283499_);
             }
 
-            private List<MultiLineLabel.TextAndWidth> getSplitMessage() {
+            public List<MultiLineLabel.TextAndWidth> getSplitMessage() {
                 Language language = Language.getInstance();
                 if (this.cachedTextAndWidth != null && language == this.splitWithLanguage) {
                     return this.cachedTextAndWidth;
@@ -128,6 +137,18 @@ public interface NuggetMultilLineLabel extends MultiLineLabel {
 
                     return this.cachedTextAndWidth;
                 }
+            }
+
+            @Override
+            public String getString() {
+                if(cachedString == null){
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (Component component : components) {
+                        stringBuilder.append(" ").append(component.getString());
+                    }
+                    cachedString = stringBuilder.toString().trim();
+                }
+                return cachedString;
             }
 
             @Override
