@@ -9,7 +9,9 @@
     "MobAccessor",
     "ScreenAccessor"
   ],
-  "client": [],
+  "client": [
+    "AbstractSliderButtonAccessor"
+  ],
   "server": [],
   "injectors": {
     "defaultRequire": 1

@@ -3,6 +3,7 @@ package com.hollingsworth.nuggets.client.gui;
 import com.hollingsworth.nuggets.mixin.ScreenAccessor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
@@ -14,15 +15,16 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class BaseScreen extends Screen {
 
     public int maxScale;
     public float scaleFactor;
-    public int bookLeft;
-    public int bookTop;
-    public int bookRight;
-    public int bookBottom;
+    public int screenLeft;
+    public int screenTop;
+    public int screenRight;
+    public int screenBottom;
 
     public int fullWidth;
     public int fullHeight;
@@ -41,10 +43,10 @@ public class BaseScreen extends Screen {
         super.init();
         this.maxScale = this.getMaxAllowedScale();
         this.scaleFactor = 1.0F;
-        bookLeft = width / 2 - fullWidth / 2;
-        bookTop = height / 2 - fullHeight / 2;
-        bookRight = width / 2 + fullWidth / 2;
-        bookBottom = height / 2 + fullHeight / 2;
+        screenLeft = width / 2 - fullWidth / 2;
+        screenTop = height / 2 - fullHeight / 2;
+        screenRight = width / 2 + fullWidth / 2;
+        screenBottom = height / 2 + fullHeight / 2;
     }
 
     public void drawTooltip(GuiGraphics stack, int mouseX, int mouseY) {
@@ -65,28 +67,6 @@ public class BaseScreen extends Screen {
         }
     }
 
-    @Override
-    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        for (GuiEventListener guieventlistener : this.children()) {
-            if (guieventlistener.mouseClicked(pMouseX, pMouseY, pButton)) {
-                if(guieventlistener instanceof NestedWidgets nestedWidgets){
-                    for(AbstractWidget extra : nestedWidgets.getExtras()){
-                        extra.mouseClicked(pMouseX, pMouseY, pButton);
-                    }
-
-                }
-                this.setFocused(guieventlistener);
-                if (pButton == 0) {
-                    this.setDragging(true);
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public void drawForegroundElements(int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
@@ -95,7 +75,7 @@ public class BaseScreen extends Screen {
         renderBackground(graphics, mouseX, mouseY, partialTicks);
         PoseStack poseStack = graphics.pose();
         poseStack.pushPose();
-        poseStack.translate(bookLeft, bookTop, 0);
+        poseStack.translate(screenLeft, screenTop, 0);
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
         drawBackgroundElements(graphics, mouseX, mouseY, partialTicks);
         drawForegroundElements(mouseX, mouseY, partialTicks);
@@ -141,24 +121,46 @@ public class BaseScreen extends Screen {
         return ((ScreenAccessor)this).getRenderables();
     }
 
+    protected Map<NestedWidgets, List<AbstractWidget>> nestedWidgetMap = new Reference2ObjectOpenHashMap<>();
+
     @Override
-    protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T pWidget) {
-        T t = super.addRenderableWidget(pWidget);
-        if(pWidget instanceof NestedWidgets nestedWidgets){
-            for(AbstractWidget widget : nestedWidgets.getExtras()){
-                super.addRenderableWidget(widget);
+    protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T widget) {
+        List<AbstractWidget> afterParent = new ArrayList<>();
+        List<AbstractWidget> beforeParent = new ArrayList<>();
+
+        if (widget instanceof NestedWidgets nestedRenderables) {
+            nestedRenderables.addBeforeParent(beforeParent);
+
+            for (AbstractWidget renderable : beforeParent) {
+                super.addRenderableWidget(renderable);
             }
+
+            nestedRenderables.addAfterParent(afterParent);
+            List<AbstractWidget> allWidgets = new ArrayList<>();
+            allWidgets.addAll(afterParent);
+            allWidgets.addAll(beforeParent);
+            nestedWidgetMap.put(nestedRenderables, allWidgets);
         }
-        return t;
+        T added = super.addRenderableWidget(widget);
+        for(AbstractWidget renderable : afterParent) {
+            super.addRenderableWidget(renderable);
+        }
+        return added;
     }
 
     @Override
     protected void removeWidget(GuiEventListener pListener) {
-        super.removeWidget(pListener);
         if(pListener instanceof NestedWidgets nestedWidgets){
-            for(AbstractWidget renderable : nestedWidgets.getExtras()){
-                removeWidget(renderable);
+            var children = nestedWidgetMap.get(nestedWidgets);
+            if(children != null){
+                for(AbstractWidget renderable : children){
+                    if(renderable != null){
+                        super.removeWidget(renderable);
+                    }
+                }
             }
+            nestedWidgetMap.remove(nestedWidgets);
         }
+        super.removeWidget(pListener);
     }
 }

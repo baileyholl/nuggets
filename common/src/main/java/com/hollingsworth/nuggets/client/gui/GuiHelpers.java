@@ -1,5 +1,6 @@
 package com.hollingsworth.nuggets.client.gui;
 
+import com.hollingsworth.nuggets.client.BlitInfo;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,6 +20,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GuiHelpers {
+
+    public static void blit(GuiGraphics graphics, BlitInfo info, int x, int y){
+        graphics.blit(info.location(), x + info.xOffset(), y + info.yOffset(), info.u(), info.v(), info.width(), info.height(), info.width(), info.height());
+    }
 
     public static boolean isMouseInRelativeRange(int mouseX, int mouseY, AbstractWidget widget) {
         return isMouseInRelativeRange(mouseX, mouseY, widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight());

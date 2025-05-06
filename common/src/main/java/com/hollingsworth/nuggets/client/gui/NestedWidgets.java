@@ -4,8 +4,19 @@ import net.minecraft.client.gui.components.AbstractWidget;
 
 import java.util.List;
 
-@FunctionalInterface
 public interface NestedWidgets {
-    List<AbstractWidget> getExtras();
+
+    default void addBeforeParent(List<AbstractWidget> widgets){
+        widgets.addAll(getExtras());
+    }
+
+    @Deprecated(forRemoval = true)
+    default List<AbstractWidget> getExtras(){
+        return List.of();
+    }
+
+    default void addAfterParent(List<AbstractWidget> widgets){
+
+    }
 }
 

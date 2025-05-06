@@ -1,5 +1,6 @@
 package com.hollingsworth.nuggets.client.gui;
 
+import com.hollingsworth.nuggets.client.BlitInfo;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.sounds.SoundManager;
@@ -12,6 +13,13 @@ public class NuggetImageButton extends BaseButton {
     public ResourceLocation hoveredImage;
     public int u, v, image_width, image_height;
     public boolean soundDisabled = false;
+    public int xOffset, yOffset;
+
+    public NuggetImageButton(int x, int y, BlitInfo blitInfo, Button.OnPress onPress) {
+        this(x, y, 0, 0, blitInfo.width(), blitInfo.height(), blitInfo.width(), blitInfo.height(), blitInfo.location(), onPress);
+        this.xOffset = blitInfo.xOffset();
+        this.yOffset = blitInfo.yOffset();
+    }
 
     public NuggetImageButton(int x, int y, int w, int h, ResourceLocation image, Button.OnPress onPress) {
         this(x, y, 0, 0, w, h, w, h, image, onPress);
@@ -40,7 +48,7 @@ public class NuggetImageButton extends BaseButton {
     @Override
     protected void renderWidget(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
         ResourceLocation image = GuiHelpers.isMouseInRelativeRange(pMouseX, pMouseY, this) && hoveredImage != null ? hoveredImage : this.image;
-        graphics.blit(image, getX(), getY(), u, v, width, height, image_width, image_height);
+        graphics.blit(image, getX() + xOffset, getY() + yOffset, u, v, width, height, image_width, image_height);
     }
 
     @Override
