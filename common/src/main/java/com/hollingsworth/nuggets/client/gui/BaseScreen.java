@@ -12,10 +12,12 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class BaseScreen extends Screen {
 
@@ -53,7 +55,7 @@ public class BaseScreen extends Screen {
         List<Component> tooltip = new ArrayList<>();
         collectTooltips(stack, mouseX, mouseY, tooltip);
         if (!tooltip.isEmpty()) {
-            stack.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+            stack.renderTooltip(font, tooltip, Optional.ofNullable(getClientImageTooltip(mouseX, mouseY)), mouseX, mouseY);
         }
     }
 
@@ -65,6 +67,10 @@ public class BaseScreen extends Screen {
                 }
             }
         }
+    }
+
+    protected TooltipComponent getClientImageTooltip(int mouseX, int mouseY) {
+        return null;
     }
 
     public void drawForegroundElements(int mouseX, int mouseY, float partialTicks) {
