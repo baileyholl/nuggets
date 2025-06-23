@@ -25,6 +25,10 @@ public class GuiHelpers {
         graphics.blit(info.location(), x + info.xOffset(), y + info.yOffset(), info.u(), info.v(), info.width(), info.height(), info.width(), info.height());
     }
 
+    public static boolean isMouseInRelativeRange(double mouseX, double mouseY, AbstractWidget widget) {
+        return isMouseInRelativeRange((int) mouseX, (int) mouseY, widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight());
+    }
+
     public static boolean isMouseInRelativeRange(int mouseX, int mouseY, AbstractWidget widget) {
         return isMouseInRelativeRange(mouseX, mouseY, widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight());
     }
