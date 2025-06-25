@@ -16,10 +16,12 @@ public class NoShadowTextField extends CopyEditBox {
 
     public NoShadowTextField(Font p_i232260_1_, int p_i232260_2_, int p_i232260_3_, int p_i232260_4_, int p_i232260_5_, Component p_i232260_6_) {
         super(p_i232260_1_, p_i232260_2_, p_i232260_3_, p_i232260_4_, p_i232260_5_, p_i232260_6_);
+        textColor = -8355712;
     }
 
     public NoShadowTextField(Font p_i232259_1_, int p_i232259_2_, int p_i232259_3_, int p_i232259_4_, int p_i232259_5_, @Nullable EditBox p_i232259_6_, Component p_i232259_7_) {
         super(p_i232259_1_, p_i232259_2_, p_i232259_3_, p_i232259_4_, p_i232259_5_, p_i232259_6_, p_i232259_7_);
+        textColor = -8355712;
     }
 
     public int getXTextOffset(){
@@ -44,7 +46,7 @@ public class NoShadowTextField extends CopyEditBox {
 
             if (!displayValue.isEmpty()) {
                 String s1 = flag ? displayValue.substring(0, adjustedCursorPos) : displayValue;
-                xOffsetCopy = graphics.drawString(this.font, this.formatter.apply(s1, this.displayPos), xOffset, yOffset, -8355712, false);
+                xOffsetCopy = graphics.drawString(this.font, this.formatter.apply(s1, this.displayPos), xOffset, yOffset, textColor, false);
             }
 
             boolean flag2 = this.cursorPos < this.value.length() || this.value.length() >= 32;
@@ -61,7 +63,7 @@ public class NoShadowTextField extends CopyEditBox {
             }
 
             if (this.value.isEmpty() && !flag2 && this.suggestion != null) {
-                graphics.drawString(this.font, this.suggestion, k1, yOffset, -8355712, false);
+                graphics.drawString(this.font, this.suggestion, k1, yOffset, textColor, false);
             }
 
             if (flag1) {
