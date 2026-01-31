@@ -1,6 +1,7 @@
 package com.hollingsworth.nuggets.client.gui;
 
 import com.hollingsworth.nuggets.client.BlitInfo;
+import com.hollingsworth.nuggets.client.NuggetClientData;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -11,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,24 @@ public class GuiHelpers {
 
     public static void blit(GuiGraphics graphics, BlitInfo info, int x, int y){
         graphics.blit(info.location(), x + info.xOffset(), y + info.yOffset(), info.u(), info.v(), info.width(), info.height(), info.width(), info.height());
+    }
+
+
+    public static void drawOutlinedText(Font font, GuiGraphics graphics, Component component, int x, int y) {
+        drawOutlinedText(font, graphics, component.getVisualOrderText(), x, y);
+    }
+
+    public static void drawOutlinedText(Font font, GuiGraphics graphics, FormattedCharSequence component, int x, int y) {
+        font.drawInBatch8xOutline(component, x, y, DyeColor.WHITE.getTextColor(), DyeColor.BLACK.getTextColor(), graphics.pose().last().pose(), NuggetClientData.bufferSource, 15728880);
+        NuggetClientData.bufferSource.endBatch();
+    }
+
+    public static void drawCenteredOutlinedText(Font font, GuiGraphics graphics, FormattedCharSequence component, int x, int y) {
+        drawOutlinedText(font, graphics, component, x - halfWidthOfText(font, component), y);
+    }
+
+    public static void drawCenteredOutlinedText(Font font, GuiGraphics graphics, Component component, int x, int y) {
+        drawCenteredOutlinedText(font, graphics, component.getVisualOrderText(), x, y);
     }
 
     public static boolean isMouseInRelativeRange(double mouseX, double mouseY, AbstractWidget widget) {

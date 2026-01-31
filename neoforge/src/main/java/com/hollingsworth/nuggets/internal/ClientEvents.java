@@ -4,6 +4,7 @@ import com.hollingsworth.nuggets.Constants;
 import com.hollingsworth.nuggets.client.NuggetClientData;
 import com.hollingsworth.nuggets.client.gui.radial.GuiRadialMenu;
 import com.hollingsworth.nuggets.client.overlay.InWorldTooltip;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
@@ -16,6 +17,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 public class ClientEvents {
+    private static final Minecraft MINECRAFT = Minecraft.getInstance();
     public static final LayeredDraw.Layer OVERLAY = InWorldTooltip::renderOverlay;
     public static void clientTickEnd(ClientTickEvent.Post event) {
         NuggetClientData.ticksInGame++;

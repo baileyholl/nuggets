@@ -12,9 +12,12 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +25,17 @@ import org.jetbrains.annotations.NotNull;
  * Class which has world related util functions like chunk load checks
  */
 public class WorldHelpers {
+
+    public static StructureTemplate getStructure(Level level, BlockPos first, BlockPos second){
+        BoundingBox bb = BoundingBox.fromCorners(first, second);
+        BlockPos origin = new BlockPos(bb.minX(), bb.minY(), bb.minZ());
+        BlockPos bounds = new BlockPos(bb.getXSpan(), bb.getYSpan(), bb.getZSpan());
+
+        StructureTemplate structure = new StructureTemplate();
+        structure.fillFromWorld(level, origin, bounds, true, Blocks.AIR);
+        return structure;
+    }
+
     /**
      * Checks if the block is loaded for block access
      *
