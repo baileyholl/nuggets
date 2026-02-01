@@ -27,10 +27,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.function.TriConsumer;
 import org.joml.Matrix4f;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 
 public class AreaCaptureHandler {
@@ -39,10 +39,10 @@ public class AreaCaptureHandler {
     public BlockPos secondTarget;
     public boolean showBoundary;
     public Direction selectedFace = null;
-    public BiConsumer<GuiGraphics, Window> onRender;
-    Consumer<StructureTemplate> onConfirmedStructure;
+    public TriConsumer<GuiGraphics, Window, AreaCaptureHandler> onRender;
+    public BiConsumer<StructureTemplate, AreaCaptureHandler> onConfirmedStructure;
 
-    public AreaCaptureHandler(BiConsumer<GuiGraphics, Window> onRender, Consumer<StructureTemplate> onConfirmedStructure){
+    public AreaCaptureHandler(TriConsumer<GuiGraphics, Window, AreaCaptureHandler> onRender, BiConsumer<StructureTemplate, AreaCaptureHandler> onConfirmedStructure){
         this.onRender = onRender;
         this.onConfirmedStructure = onConfirmedStructure;
     }
@@ -66,7 +66,7 @@ public class AreaCaptureHandler {
         showBoundary = false;
         if (firstTarget != null && secondTarget != null) {
             StructureTemplate structure = WorldHelpers.getStructure(Minecraft.getInstance().level, firstTarget, secondTarget);
-            this.onConfirmedStructure.accept(structure);
+            this.onConfirmedStructure.accept(structure, this);
         }
     }
 
@@ -190,7 +190,7 @@ public class AreaCaptureHandler {
         firstTarget = net.minecraft.core.BlockPos.containing(bb.minX, bb.minY, bb.minZ);
         secondTarget = net.minecraft.core.BlockPos.containing(bb.maxX, bb.maxY, bb.maxZ);
         LocalPlayer player = Minecraft.getInstance().player;
-        player.displayClientMessage(Component.translatable("blockprints.dimensions", (int) bb.getXsize() + 1, (int) bb.getYsize() + 1,
+        player.displayClientMessage(Component.translatable("nuggets.dimensions", (int) bb.getXsize() + 1, (int) bb.getYsize() + 1,
                         (int) bb.getZsize() + 1), true);
 
 
@@ -218,7 +218,7 @@ public class AreaCaptureHandler {
     public void renderBoundaryUI(GuiGraphics graphics, Window window) {
         if (!showBoundary || Minecraft.getInstance().options.hideGui)
             return;
-        onRender.accept(graphics, window);
+        onRender.accept(graphics, window, this);
     }
 
 }
