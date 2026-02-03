@@ -4,19 +4,25 @@ package com.hollingsworth.nuggets.client.area_capture;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 
-public class RenderStructureHandler {
-    private StructureRenderData placingData;
-    private PlaceSchematicScreen schematicTools;
+public class RenderStructureHandler<T extends StructureRenderData> {
+    public T placingData;
+    public PlaceSchematicScreen schematicTools;
+    public Consumer<RenderStructureHandler<T>> onConfirm;
+    public Consumer<RenderStructureHandler<T>> onDelete;
+    public Consumer<RenderStructureHandler<T>> onPrint;
 
-    public RenderStructureHandler(KeyMapping focusKey, StructureRenderData placingData, BiFunction<Player, StructureRenderData, List<PlaceSchematicScreen.ToolType>> setupTools){
+    public RenderStructureHandler(String modId, KeyMapping focusKey, T placingData,
+                                  Consumer<RenderStructureHandler<T>> onConfirmed, Consumer<RenderStructureHandler<T>> onDeleted, @Nullable Consumer<RenderStructureHandler<T>> onPrint){
         this.placingData = placingData;
-        schematicTools = new PlaceSchematicScreen(focusKey, this, placingData, setupTools);
+        schematicTools = new PlaceSchematicScreen(modId, focusKey, this);
+        this.onDelete = onDeleted;
+        this.onPrint = onPrint;
+        this.onConfirm = onConfirmed;
     }
     // Client tick event
     public void tick(){

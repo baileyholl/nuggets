@@ -48,7 +48,6 @@ import net.minecraft.world.ticks.BlackholeTickAccess;
 import net.minecraft.world.ticks.LevelTickAccess;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
@@ -58,7 +57,7 @@ public class FakeRenderingWorld extends Level implements LevelAccessor {
     private Level realWorld;
     private BlockPos lookingAt;
 
-    public FakeRenderingWorld(Level rWorld, ArrayList<StatePos> coordinates, BlockPos lookingAt) {
+    public FakeRenderingWorld(Level rWorld, List<StatePos> coordinates, BlockPos lookingAt) {
         this(rWorld);
         this.lookingAt = lookingAt;
         for (StatePos statePos : coordinates) {

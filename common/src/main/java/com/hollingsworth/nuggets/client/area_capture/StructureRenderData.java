@@ -10,28 +10,29 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StructureRenderData {
-    public ArrayList<StatePos> statePosCache;
+    public List<StatePos> statePosCache;
     public BlockPos anchorPos;
     public BlockPos lastRenderPos;
     public double distanceFromCameraCast = 25;
     public StructureTemplate structureTemplate;
-    public Rotation rotation;
-    public Mirror mirror;
+    public Rotation rotation = Rotation.NONE;
+    public Mirror mirror = Mirror.NONE;
     public boolean flipped = false;
     public BoundingBox boundingBox;
     public StructurePlaceSettings structurePlaceSettings;
 
     public StructureRenderData(StructureTemplate template){
-        var accessor = (StructureTemplateAccessor)structureTemplate;
+        this.structureTemplate = template;
+        var accessor = (StructureTemplateAccessor)template;
         var palettes = accessor.getPalettes();
         if(palettes.isEmpty()){
             return;
         }
         var palette = palettes.get(0);
         statePosCache = new ArrayList<>();
-        this.structureTemplate = template;
         for(StructureTemplate.StructureBlockInfo blockInfo : palette.blocks()){
             statePosCache.add(new StatePos(blockInfo.state(), blockInfo.pos()));
         }

@@ -1,6 +1,5 @@
 package com.hollingsworth.nuggets.client.area_capture;
 
-import com.hollingsworth.nuggets.Constants;
 import com.hollingsworth.nuggets.client.gui.GuiHelpers;
 import com.hollingsworth.nuggets.common.util.RaycastHelper;
 import com.mojang.blaze3d.platform.Window;
@@ -13,13 +12,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Rotation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 public class PlaceSchematicScreen extends Screen {
 
@@ -34,11 +30,21 @@ public class PlaceSchematicScreen extends Screen {
     protected int h;
     public List<ToolType> tools = new ArrayList<>();
     public RenderStructureHandler renderStructureHandler;
-    public BiFunction<Player, StructureRenderData, List<ToolType>> setupToolsFunc;
     public KeyMapping focusKey;
 
-    public PlaceSchematicScreen(KeyMapping focusKey, RenderStructureHandler renderStructureHandler, StructureRenderData data, BiFunction<Player, StructureRenderData, List<ToolType>> setupToolsFunc) {
+    public PlaceTool placeTool;
+    public RotateTool rotateTool;
+    public MoveHorizontalTool moveHorizontalTool;
+    public MoveVerticalTool moveVerticalTool;
+    public ConfirmTool confirmTool;
+    public PrintTool printTool;
+    public DeleteTool deleteTool;
+    public MirrorTool mirrorTool;
+    public String modId;
+
+    public PlaceSchematicScreen(String modId, KeyMapping focusKey, RenderStructureHandler<?> renderStructureHandler) {
         super(Component.literal("Tool Selection"));
+        this.modId = modId;
         this.focusKey = focusKey;
         this.renderStructureHandler = renderStructureHandler;
         this.minecraft = Minecraft.getInstance();
@@ -47,18 +53,29 @@ public class PlaceSchematicScreen extends Screen {
         selection = 0;
         initialized = false;
         h = 34;
-        tools.add(new PlaceTool(data, this));
-        this.setupToolsFunc = setupToolsFunc;
+
+        placeTool = new PlaceTool(this, ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/visualizer_icon_place.png"));
+        rotateTool = new RotateTool(this, ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/visualizer_icon_rotate.png"));
+        moveHorizontalTool = new MoveHorizontalTool(this, ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/visualizer_icon_horizontal.png"));
+        moveVerticalTool = new MoveVerticalTool(this, ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/visualizer_icon_vertical.png"));
+        confirmTool = new ConfirmTool(this, ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/visualizer_icon_confirm.png"));
+        printTool = new PrintTool(this, ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/visualizer_print.png"));
+        deleteTool = new DeleteTool(this, ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/visualizer_trash.png"));
+        mirrorTool = new MirrorTool(this, ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/visualizer_icon_mirror.png"));
+
+        tools.add(placeTool);
     }
 
-    public void setTools(List<ToolType> tools){
-        this.tools = tools;
-    }
-
-    public void setSelectedElement(ToolType tool) {
-        if (!tools.contains(tool))
-            return;
-        selection = tools.indexOf(tool);
+    public void setupManipulationTools(){
+        tools.clear();
+        tools.add(moveHorizontalTool);
+        tools.add(moveVerticalTool);
+        tools.add(rotateTool);
+        tools.add(confirmTool);
+        if(renderStructureHandler.onPrint != null) {
+            tools.add(printTool);
+        }
+        tools.add(deleteTool);
     }
 
     public ToolType getSelectedElement(){
@@ -83,14 +100,14 @@ public class PlaceSchematicScreen extends Screen {
         matrixStack.pushPose();
         matrixStack.translate(0, -yOffset, focused ? 100 : 0);
 
-        graphics.blit(Constants.prefix("textures/gui/hud_background.png"), x - 15, y, 0, 0, w, h, 16, 16);
+        graphics.blit(ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/hud_background.png"), x - 15, y, 0, 0, w, h, 16, 16);
 
         float toolTipAlpha = yOffset / 10;
         List<Component> toolTip = tools.get(selection)
                 .getDescription();
 
         if (toolTipAlpha > 0.25f) {
-            graphics.blit(Constants.prefix("textures/gui/hud_background.png"), x - 15, y + 16, 0, 0, w, h, 16, 16);
+            graphics.blit(ResourceLocation.fromNamespaceAndPath(modId, "textures/gui/hud_background.png"), x - 15, y + 16, 0, 0, w, h, 16, 16);
             if (!toolTip.isEmpty())
                 GuiHelpers.drawOutlinedText(minecraft.font, graphics, toolTip.get(0), x - 10, y + 38);
             if (toolTip.size() > 1)
@@ -165,15 +182,13 @@ public class PlaceSchematicScreen extends Screen {
     }
 
     public static class DeleteTool extends ToolType {
-        public Consumer<DeleteTool> onClickConsumer;
-        public DeleteTool(StructureRenderData structureData, PlaceSchematicScreen placeSchematicScreen, Consumer<DeleteTool> onClickConsumer) {
-            super(Component.translatable("nuggets.delete_tool"), Constants.prefix("textures/gui/visualizer_trash.png"), structureData, placeSchematicScreen);
-            this.onClickConsumer = onClickConsumer;
+        public DeleteTool(PlaceSchematicScreen placeSchematicScreen, ResourceLocation icon) {
+            super(Component.translatable("nuggets.delete_tool"), icon, placeSchematicScreen);
         }
 
         @Override
         public void onClick() {
-            onClickConsumer.accept(this);
+            placeSchematicScreen.renderStructureHandler.onDelete.accept(placeSchematicScreen.renderStructureHandler);
         }
 
         @Override
@@ -186,12 +201,13 @@ public class PlaceSchematicScreen extends Screen {
 
     public static class MoveHorizontalTool extends ToolType {
 
-        public MoveHorizontalTool(StructureRenderData structureData, PlaceSchematicScreen placeSchematicScreen) {
-            super(Component.translatable("nuggets.move_horizontal_tool"), Constants.prefix("textures/gui/visualizer_icon_horizontal.png"), structureData, placeSchematicScreen);
+        public MoveHorizontalTool(PlaceSchematicScreen placeSchematicScreen, ResourceLocation icon) {
+            super(Component.translatable("nuggets.move_horizontal_tool"), icon, placeSchematicScreen);
         }
 
         @Override
         public boolean handleMouseWheel(double delta) {
+            StructureRenderData structureData = placeSchematicScreen.renderStructureHandler.placingData;
             Direction direction = Minecraft.getInstance().player.getNearestViewDirection();
             BlockPos offset = new BlockPos((int) delta * direction.getStepX(), 0, (int) delta * direction.getStepZ());
             structureData.anchorPos = structureData.anchorPos.offset(offset);
@@ -208,12 +224,13 @@ public class PlaceSchematicScreen extends Screen {
 
     public static class MoveVerticalTool extends ToolType {
 
-        public MoveVerticalTool(StructureRenderData structureData, PlaceSchematicScreen placeSchematicScreen) {
-            super(Component.translatable("nuggets.move_vertical_tool"), Constants.prefix("textures/gui/visualizer_icon_vertical.png"), structureData, placeSchematicScreen);
+        public MoveVerticalTool(PlaceSchematicScreen placeSchematicScreen, ResourceLocation icon) {
+            super(Component.translatable("nuggets.move_vertical_tool"), icon, placeSchematicScreen);
         }
 
         @Override
         public boolean handleMouseWheel(double delta) {
+            StructureRenderData structureData = placeSchematicScreen.renderStructureHandler.placingData;
             if(structureData == null || structureData.anchorPos == null){
                 return false;
             }
@@ -231,12 +248,13 @@ public class PlaceSchematicScreen extends Screen {
 
     public static class MirrorTool extends ToolType {
 
-        public MirrorTool(StructureRenderData structureData, PlaceSchematicScreen placeSchematicScreen) {
-            super(Component.translatable("nuggets.mirror_tool"), Constants.prefix("textures/gui/visualizer_icon_mirror.png"), structureData, placeSchematicScreen);
+        public MirrorTool(PlaceSchematicScreen placeSchematicScreen, ResourceLocation icon) {
+            super(Component.translatable("nuggets.mirror_tool"), icon, placeSchematicScreen);
         }
 
         @Override
         public boolean handleMouseWheel(double delta) {
+            StructureRenderData structureData = placeSchematicScreen.renderStructureHandler.placingData;
             structureData.flip();
             structureData.lastRenderPos = null;
             return true;
@@ -252,16 +270,14 @@ public class PlaceSchematicScreen extends Screen {
 
 
     public static class ConfirmTool extends ToolType{
-        public Consumer<ConfirmTool> onClickConsumer;
 
-        public ConfirmTool(StructureRenderData structureData, PlaceSchematicScreen placeSchematicScreen, Consumer<ConfirmTool> onClickConsumer) {
-            super(Component.translatable("nuggets.confirm_tool"), Constants.prefix("textures/gui/visualizer_icon_confirm.png"), structureData, placeSchematicScreen);
-            this.onClickConsumer = onClickConsumer;
+        public ConfirmTool(PlaceSchematicScreen placeSchematicScreen, ResourceLocation icon) {
+            super(Component.translatable("nuggets.confirm_tool"), icon, placeSchematicScreen);
         }
 
         @Override
         public void onClick() {
-            onClickConsumer.accept(this);
+            placeSchematicScreen.renderStructureHandler.onConfirm.accept(placeSchematicScreen.renderStructureHandler);
         }
 
         @Override
@@ -273,15 +289,13 @@ public class PlaceSchematicScreen extends Screen {
     }
 
     public static class PrintTool extends ToolType{
-        public Consumer<PrintTool> onClickConsumer;
-        public PrintTool(StructureRenderData structureData, PlaceSchematicScreen placeSchematicScreen, Consumer<PrintTool> onClickConsumer) {
-            super(Component.translatable("nuggets.print_tool"), Constants.prefix("textures/gui/visualizer_print.png"), structureData, placeSchematicScreen);
-            this.onClickConsumer = onClickConsumer;
+        public PrintTool(PlaceSchematicScreen placeSchematicScreen , ResourceLocation icon) {
+            super(Component.translatable("nuggets.print_tool"), icon, placeSchematicScreen);
         }
 
         @Override
         public void onClick() {
-            onClickConsumer.accept(this);
+            placeSchematicScreen.renderStructureHandler.onPrint.accept(placeSchematicScreen.renderStructureHandler);
         }
 
         @Override
@@ -295,8 +309,8 @@ public class PlaceSchematicScreen extends Screen {
 
     public static class RotateTool extends ToolType{
 
-        public RotateTool(StructureRenderData structureData, PlaceSchematicScreen placeSchematicScreen) {
-            super(Component.translatable("nuggets.rotate_tool"), Constants.prefix("textures/gui/visualizer_icon_rotate.png"), structureData, placeSchematicScreen);
+        public RotateTool(PlaceSchematicScreen placeSchematicScreen, ResourceLocation icon) {
+            super(Component.translatable("nuggets.rotate_tool"), icon, placeSchematicScreen);
         }
 
         @Override
@@ -308,6 +322,7 @@ public class PlaceSchematicScreen extends Screen {
 
         @Override
         public boolean handleMouseWheel(double delta) {
+            StructureRenderData structureData = placeSchematicScreen.renderStructureHandler.placingData;
             if (structureData == null) {
                 return false;
             }
@@ -320,8 +335,8 @@ public class PlaceSchematicScreen extends Screen {
     public static class PlaceTool extends ToolType{
 
 
-        public PlaceTool(StructureRenderData structureData, PlaceSchematicScreen placeSchematicScreen) {
-            super(Component.translatable("nuggets.place_tool"), Constants.prefix("textures/gui/visualizer_icon_place.png"), structureData, placeSchematicScreen);
+        public PlaceTool(PlaceSchematicScreen placeSchematicScreen, ResourceLocation icon) {
+            super(Component.translatable("nuggets.place_tool"), icon, placeSchematicScreen);
         }
 
         @Override
@@ -333,12 +348,14 @@ public class PlaceSchematicScreen extends Screen {
 
         @Override
         public void onClick() {
+            StructureRenderData structureData = placeSchematicScreen.renderStructureHandler.placingData;
             structureData.anchorPos = RaycastHelper.getLookingAt(structureData.distanceFromCameraCast, Minecraft.getInstance().player, true).getBlockPos();
-            placeSchematicScreen.setTools(placeSchematicScreen.setupToolsFunc.apply(Minecraft.getInstance().player, structureData));
+            placeSchematicScreen.setupManipulationTools();
         }
 
         @Override
         public boolean handleMouseWheel(double delta) {
+            StructureRenderData structureData = placeSchematicScreen.renderStructureHandler.placingData;
             if(structureData == null){
                 return false;
             }
@@ -357,18 +374,15 @@ public class PlaceSchematicScreen extends Screen {
 
         public Component name;
         public ResourceLocation icon;
-        public StructureRenderData structureData;
         public PlaceSchematicScreen placeSchematicScreen;
 
-        public ToolType(Component name, ResourceLocation icon, StructureRenderData structureData, PlaceSchematicScreen placeSchematicScreen){
+        public ToolType(Component name, ResourceLocation icon, PlaceSchematicScreen placeSchematicScreen){
             this.name = name;
             this.icon = icon;
-            this.structureData = structureData;
             this.placeSchematicScreen = placeSchematicScreen;
         }
 
         public void onClick(){
-
         }
 
 

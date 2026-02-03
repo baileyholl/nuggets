@@ -1,6 +1,9 @@
 package com.hollingsworth.nuggets.client.rendering;
 
 
+import com.hollingsworth.nuggets.common.util.ItemStackKey;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +12,8 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -39,7 +44,7 @@ public class StatePos {
         this.pos = pos;
     }
 
-    public static ArrayList<BlockState> getBlockStateMap(ArrayList<StatePos> list) {
+    public static List<BlockState> getBlockStateMap(List<StatePos> list) {
         ArrayList<BlockState> blockStateMap = new ArrayList<>();
         for (StatePos statePos : list) {
             if (!blockStateMap.contains(statePos.state))
@@ -48,7 +53,7 @@ public class StatePos {
         return blockStateMap;
     }
 
-    public static ArrayList<StatePos> rotate(ArrayList<StatePos> list, ArrayList<TagPos> tagListMutable, Rotation rotation) {
+    public static List<StatePos> rotate(List<StatePos> list, List<TagPos> tagListMutable, Rotation rotation) {
         ArrayList<StatePos> rotatedList = new ArrayList<>();
         if (list == null || list.isEmpty()) {
             return rotatedList;
@@ -83,7 +88,7 @@ public class StatePos {
         return rotatedList;
     }
 
-    public static ListTag getBlockStateNBT(ArrayList<BlockState> blockStateMap) {
+    public static ListTag getBlockStateNBT(List<BlockState> blockStateMap) {
         ListTag listTag = new ListTag();
         for (BlockState blockState : blockStateMap) {
             listTag.add(NbtUtils.writeBlockState(blockState));
@@ -91,13 +96,30 @@ public class StatePos {
         return listTag;
     }
 
-    public static ArrayList<BlockState> getBlockStateMapFromNBT(ListTag listTag) {
+    public static List<BlockState> getBlockStateMapFromNBT(ListTag listTag) {
         ArrayList<BlockState> blockStateMap = new ArrayList<>();
         for (int i = 0; i < listTag.size(); i++) {
             BlockState blockState = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), listTag.getCompound(i));
             blockStateMap.add(blockState);
         }
         return blockStateMap;
+    }
+
+    public static Map<ItemStackKey, Integer> getItemList(ArrayList<StatePos> list) {
+        Map<ItemStackKey, Integer> itemList = new Object2IntOpenHashMap<>();
+        if (list == null || list.isEmpty())
+            return itemList;
+        for (StatePos statePos : list) {
+            BlockPos blockPos = BlockPos.ZERO;
+            Level level = Minecraft.getInstance().level;
+            ItemStack cloneStack = statePos.state.getBlock().getCloneItemStack(level, blockPos, statePos.state);
+            ItemStackKey itemStackKey = new ItemStackKey(cloneStack, true);
+            if (!itemList.containsKey(itemStackKey)) //Todo Slabs, etc
+                itemList.put(itemStackKey, 1);
+            else
+                itemList.put(itemStackKey, itemList.get(itemStackKey) + 1);
+        }
+        return itemList;
     }
 
     @Override
