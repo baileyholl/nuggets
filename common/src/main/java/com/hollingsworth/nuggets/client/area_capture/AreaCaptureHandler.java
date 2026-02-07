@@ -4,30 +4,26 @@ package com.hollingsworth.nuggets.client.area_capture;
 import com.hollingsworth.nuggets.client.NuggetClientData;
 import com.hollingsworth.nuggets.common.util.RaycastHelper;
 import com.hollingsworth.nuggets.common.util.VecHelper;
-import com.hollingsworth.nuggets.common.util.WorldHelpers;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.apache.commons.lang3.function.TriConsumer;
 import org.joml.Matrix4f;
 
 import java.util.function.BiConsumer;
@@ -39,42 +35,65 @@ public class AreaCaptureHandler {
     public BlockPos secondTarget;
     public boolean showBoundary;
     public Direction selectedFace = null;
-    public TriConsumer<GuiGraphics, Window, AreaCaptureHandler> onRender;
-    public BiConsumer<StructureTemplate, AreaCaptureHandler> onConfirmedStructure;
+    BiConsumer<BoundingBox, AreaCaptureHandler> onConfirmedRegion;
+    CaptureSchematicScreen captureSchematicScreen;
+    private final String modId;
+    private final KeyMapping focusKey;
 
-    public AreaCaptureHandler(TriConsumer<GuiGraphics, Window, AreaCaptureHandler> onRender, BiConsumer<StructureTemplate, AreaCaptureHandler> onConfirmedStructure){
-        this.onRender = onRender;
-        this.onConfirmedStructure = onConfirmedStructure;
+    public AreaCaptureHandler(String modId, KeyMapping focusKey, BiConsumer<BoundingBox, AreaCaptureHandler> onConfirmedRegion){
+        this.modId = modId;
+        this.focusKey = focusKey;
+        this.onConfirmedRegion = onConfirmedRegion;
+        this.captureSchematicScreen = new CaptureSchematicScreen(modId, focusKey, onConfirmedRegion, this);
     }
+
+    // Right click event
+    public void rightClickEvent() {
+        if (!showBoundary) {
+            return;
+        }
+        captureSchematicScreen.getSelectedElement().onClick();
+    }
+
+    // Bound tool key pressed event
+    public void toolKeyHit(boolean keyPressed){
+        if (!showBoundary) {
+            return;
+        }
+        if (keyPressed && !captureSchematicScreen.focused)
+            captureSchematicScreen.focused = true;
+        if (!keyPressed && captureSchematicScreen.focused) {
+            captureSchematicScreen.focused = false;
+            captureSchematicScreen.onClose();
+        }
+    }
+
+    public boolean mouseScrolled(double delta) {
+        if (!showBoundary) {
+            return false;
+        }
+        return captureSchematicScreen.scroll(delta);
+    }
+
+    // RenderGuiLayerEvent.Post event
+    public void renderInstructions(GuiGraphics graphics, Window window) {
+        if (!showBoundary)
+            return;
+        captureSchematicScreen.renderPassive(graphics, 0);
+    }
+
 
     public void startCapture(){
         showBoundary = true;
         firstTarget = null;
         secondTarget = null;
+        this.captureSchematicScreen = new CaptureSchematicScreen(modId, focusKey, onConfirmedRegion, this);
     }
 
     public void cancelCapture(){
         showBoundary = false;
         firstTarget = null;
         secondTarget = null;
-    }
-
-    public void onConfirmHit() {
-        if (!showBoundary) {
-            return;
-        }
-        showBoundary = false;
-        if (firstTarget != null && secondTarget != null) {
-            StructureTemplate structure = WorldHelpers.getStructure(Minecraft.getInstance().level, firstTarget, secondTarget);
-            this.onConfirmedStructure.accept(structure, this);
-        }
-    }
-
-    public void onCancelHit() {
-        if (!showBoundary) {
-            return;
-        }
-        cancelCapture();
     }
 
     public BlockPos selectedPos = null;
@@ -138,66 +157,11 @@ public class AreaCaptureHandler {
         poseStack.popPose();
     }
 
-    public boolean positionClicked() {
-        if (!showBoundary) {
-            return false;
-        }
-        BlockPos pos = selectedPos;
-        if (pos == null) {
-            return false;
-        }
-        if (firstTarget == null) {
-            firstTarget = pos.immutable();
-            return true;
-        } else if (secondTarget == null && !firstTarget.equals(pos)) {
-            secondTarget = pos.immutable();
-            return true;
-        }
-        return false;
-    }
-
-    public boolean mouseScrolled(double delta){
-        if (!showBoundary || firstTarget == null || secondTarget == null) {
-            return false;
-        }
-
-        if (!Screen.hasControlDown())
-            return false;
-
-        if (selectedFace == null)
-            return true;
-
-        AABB bb = new AABB(firstTarget.getX(), firstTarget.getY(), firstTarget.getZ(), secondTarget.getX(), secondTarget.getY(), secondTarget.getZ());
-        Vec3i vec = selectedFace.getNormal();
-        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera()
-                .getPosition();
-        if (bb.contains(projectedView))
-            delta *= -1;
-
-        int x = (int) (vec.getX() * delta);
-        int y = (int) (vec.getY() * delta);
-        int z = (int) (vec.getZ() * delta);
-
-        Direction.AxisDirection axisDirection = selectedFace.getAxisDirection();
-        if (axisDirection == Direction.AxisDirection.NEGATIVE)
-            bb = bb.move(-x, -y, -z);
-
-        double maxX = Math.max(bb.maxX - x * axisDirection.getStep(), bb.minX);
-        double maxY = Math.max(bb.maxY - y * axisDirection.getStep(), bb.minY);
-        double maxZ = Math.max(bb.maxZ - z * axisDirection.getStep(), bb.minZ);
-        bb = new AABB(bb.minX, bb.minY, bb.minZ, maxX, maxY, maxZ);
-
-        firstTarget = net.minecraft.core.BlockPos.containing(bb.minX, bb.minY, bb.minZ);
-        secondTarget = net.minecraft.core.BlockPos.containing(bb.maxX, bb.maxY, bb.maxZ);
-        LocalPlayer player = Minecraft.getInstance().player;
-        player.displayClientMessage(Component.translatable("nuggets.dimensions", (int) bb.getXsize() + 1, (int) bb.getYsize() + 1,
-                        (int) bb.getZsize() + 1), true);
-
-
-        return true;
-    }
-
     public void tick(){
+        if(!showBoundary){
+            return;
+        }
+        captureSchematicScreen.update();
         selectedFace = null;
         if (secondTarget != null) {
             Player player = Minecraft.getInstance().player;
@@ -214,11 +178,4 @@ public class AreaCaptureHandler {
         }
 
     }
-
-    public void renderBoundaryUI(GuiGraphics graphics, Window window) {
-        if (!showBoundary || Minecraft.getInstance().options.hideGui)
-            return;
-        onRender.accept(graphics, window, this);
-    }
-
 }
