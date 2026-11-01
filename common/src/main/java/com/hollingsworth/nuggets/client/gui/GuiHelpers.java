@@ -70,6 +70,14 @@ public class GuiHelpers {
         graphics.drawString(font, component, x - halfWidthOfText(font, component), y, color, false);
     }
 
+    public static void drawCenteredString(Font font, GuiGraphics graphics, FormattedCharSequence component, int x, int y, int color) {
+        graphics.drawString(font, component, x - halfWidthOfText(font, component), y, color, true);
+    }
+
+    public static void drawCenteredString(Font font, GuiGraphics graphics, Component component, int x, int y, int color) {
+        graphics.drawString(font, component.getString(), x - halfWidthOfText(font, component.getVisualOrderText()), y, color, true);
+    }
+
     public static int halfWidthOfText(Font font, FormattedCharSequence component) {
         return font.width(component) / 2;
     }
