@@ -16,6 +16,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BedPart;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.SlabType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -105,19 +109,28 @@ public class StatePos {
         return blockStateMap;
     }
 
+    public static boolean isSecondaryPart(BlockState state) {
+        return (state.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF) && state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER)
+                || (state.hasProperty(BlockStateProperties.BED_PART) && state.getValue(BlockStateProperties.BED_PART) == BedPart.HEAD);
+    }
+
     public static Map<ItemStackKey, Integer> getItemList(ArrayList<StatePos> list) {
         Map<ItemStackKey, Integer> itemList = new Object2IntOpenHashMap<>();
         if (list == null || list.isEmpty())
             return itemList;
         for (StatePos statePos : list) {
+            BlockState state = statePos.state;
+            if (isSecondaryPart(state)) {
+                continue;
+            }
             BlockPos blockPos = BlockPos.ZERO;
             Level level = Minecraft.getInstance().level;
-            ItemStack cloneStack = statePos.state.getBlock().getCloneItemStack(level, blockPos, statePos.state);
+            ItemStack cloneStack = state.getBlock().getCloneItemStack(level, blockPos, state);
+            if (cloneStack.isEmpty())
+                continue;
             ItemStackKey itemStackKey = new ItemStackKey(cloneStack, true);
-            if (!itemList.containsKey(itemStackKey)) //Todo Slabs, etc
-                itemList.put(itemStackKey, 1);
-            else
-                itemList.put(itemStackKey, itemList.get(itemStackKey) + 1);
+            int count = state.hasProperty(BlockStateProperties.SLAB_TYPE) && state.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.DOUBLE ? 2 : 1;
+            itemList.merge(itemStackKey, count, Integer::sum);
         }
         return itemList;
     }

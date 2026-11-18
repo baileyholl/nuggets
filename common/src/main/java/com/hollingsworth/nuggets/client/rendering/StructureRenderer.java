@@ -199,16 +199,23 @@ public class StructureRenderer {
         for (StatePos pos : data.statePosCache) {
             if (pos.state.isAir() || isModelRender(pos.state))
                 continue;
-            poseStack.pushPose();
-            poseStack.translate(-projectedView.x(), -projectedView.y(), -projectedView.z());
-            poseStack.translate(renderPos.getX(), renderPos.getY(), renderPos.getZ());
-            poseStack.translate(pos.pos.getX(), pos.pos.getY(), pos.pos.getZ());
             BlockEntity blockEntity = data.fakeRenderingWorld.getBlockEntity(pos.pos);
-            if (blockEntity != null)
-                blockEntityRenderer.render(blockEntity, 0, poseStack, multiplyAlphaRenderTypeBuffer);
-            else
-                DireRenderMethods.renderBETransparent(data.fakeRenderingWorld.getBlockState(pos.pos), poseStack, buffersource, 15728640, 655360, 0.5f);
-            poseStack.popPose();
+            if (blockEntity == null && StatePos.isSecondaryPart(pos.state)) {
+                continue;
+            }
+            PoseStack blockPose = new PoseStack();
+            blockPose.mulPose(poseStack.last().pose());
+            blockPose.translate(-projectedView.x(), -projectedView.y(), -projectedView.z());
+            blockPose.translate(renderPos.getX(), renderPos.getY(), renderPos.getZ());
+            blockPose.translate(pos.pos.getX(), pos.pos.getY(), pos.pos.getZ());
+            try {
+                if (blockEntity != null)
+                    blockEntityRenderer.render(blockEntity, 0, blockPose, multiplyAlphaRenderTypeBuffer);
+                else
+                    DireRenderMethods.renderBETransparent(data.fakeRenderingWorld.getBlockState(pos.pos), blockPose, buffersource, 15728640, 655360, 0.5f);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

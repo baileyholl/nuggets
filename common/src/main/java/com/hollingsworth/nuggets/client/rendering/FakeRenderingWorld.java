@@ -131,7 +131,7 @@ public class FakeRenderingWorld extends Level implements LevelAccessor {
 
     @Override
     public RegistryAccess registryAccess() {
-        return null;
+        return realWorld.registryAccess();
     }
 
     @Override
@@ -141,7 +141,7 @@ public class FakeRenderingWorld extends Level implements LevelAccessor {
 
     @Override
     public FeatureFlagSet enabledFeatures() {
-        return null;
+        return realWorld.enabledFeatures();
     }
 
     @org.jetbrains.annotations.Nullable
@@ -227,7 +227,7 @@ public class FakeRenderingWorld extends Level implements LevelAccessor {
 
     @Override
     public TickRateManager tickRateManager() {
-        return null;
+        return realWorld.tickRateManager();
     }
 
     @Override
@@ -248,7 +248,7 @@ public class FakeRenderingWorld extends Level implements LevelAccessor {
 
     @Override
     public RandomSource getRandom() {
-        return null;
+        return realWorld.getRandom();
     }
 
     @Override
@@ -302,7 +302,7 @@ public class FakeRenderingWorld extends Level implements LevelAccessor {
 
     @Override
     public WorldBorder getWorldBorder() {
-        return null;
+        return realWorld.getWorldBorder();
     }
 
     @Override

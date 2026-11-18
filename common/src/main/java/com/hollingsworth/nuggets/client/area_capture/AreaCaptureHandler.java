@@ -130,10 +130,10 @@ public class AreaCaptureHandler {
             if (firstPos == null) {
                 currentSelectionBox = selectedPos == null ? null : new AABB(selectedPos);
             } else {
-                currentSelectionBox = selectedPos == null ? new AABB(firstPos) : AABB.encapsulatingFullBlocks(firstPos, selectedPos).expandTowards(1, 1, 1);
+                currentSelectionBox = selectedPos == null ? new AABB(firstPos) : AABB.encapsulatingFullBlocks(firstPos, selectedPos);
             }
         } else {
-            currentSelectionBox = AABB.encapsulatingFullBlocks(firstPos, secondPos).expandTowards(1, 1, 1);
+            currentSelectionBox = AABB.encapsulatingFullBlocks(firstPos, secondPos);
         }
 
         renderBbox(currentSelectionBox, poseStack, modelViewMatrix);
@@ -146,7 +146,6 @@ public class AreaCaptureHandler {
         Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera()
                 .getPosition();
 
-        currentSelectionBox.move(camera.scale(-1));
         currentSelectionBox = currentSelectionBox.move(-camera.x, -camera.y, -camera.z);
 
         poseStack.pushPose();
@@ -165,7 +164,7 @@ public class AreaCaptureHandler {
         selectedFace = null;
         if (secondTarget != null) {
             Player player = Minecraft.getInstance().player;
-            AABB bb = AABB.encapsulatingFullBlocks(firstTarget, secondTarget).expandTowards(1, 1, 1)
+            AABB bb = AABB.encapsulatingFullBlocks(firstTarget, secondTarget)
                     .inflate(.45f);
             Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera()
                     .getPosition();

@@ -71,7 +71,7 @@ public class CaptureSchematicScreen extends BaseSchematicScreen {
             }
             if (captureHandler.firstTarget == null) {
                 captureHandler.firstTarget = pos.immutable();
-            } else if (captureHandler.secondTarget == null && !captureHandler.firstTarget.equals(pos)) {
+            } else if (captureHandler.secondTarget == null) {
                 captureHandler.secondTarget = pos.immutable();
                 placeSchematicScreen.onBoundarySet();
             }
@@ -158,7 +158,7 @@ public class CaptureSchematicScreen extends BaseSchematicScreen {
             Vec3i vec = selectedFace.getNormal();
             Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera()
                     .getPosition();
-            if (bb.contains(projectedView))
+            if (AABB.encapsulatingFullBlocks(firstTarget, secondTarget).inflate(.45f).contains(projectedView))
                 delta *= -1;
 
             int x = (int) (vec.getX() * delta);
